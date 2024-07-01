@@ -1,5 +1,9 @@
 .venv
+
 resources/linux/chrome
+
 resources/linux/chromedriver
+
 resources/win64/chrome
+
 resources/win64/chromedriver.exe
