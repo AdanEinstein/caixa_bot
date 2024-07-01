@@ -2,8 +2,12 @@
 
 resources/linux/chrome
 
+resources/linux/chrome.zip.up
+
 resources/linux/chromedriver
 
 resources/win64/chrome
+
+resources/win64/chrome.zip.up
 
 resources/win64/chromedriver.exe
