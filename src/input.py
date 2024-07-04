@@ -41,7 +41,8 @@ def get_output_path(ask: bool = True):
         if not path: 
             raise ValueError('caminho inválido')
         return path
-    os.mkdir(os.path.join(os.path.abspath(os.path.curdir), 'output'))
+    if not os.path.exists(os.path.join(os.path.abspath(os.path.curdir), 'output')):
+        os.mkdir(os.path.join(os.path.abspath(os.path.curdir), 'output'))
     return os.path.join(os.path.abspath(os.path.curdir), 'output', 'data.xlsx')
 
 

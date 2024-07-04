@@ -15,9 +15,9 @@ def main():
                 .select_state(state)
             for notice in ws.iterate_notices():
                 for prop in ws.iterate_all_properties(notice['open_notice_cmd']):
-                    data = ws.open_property(prop, dt.contains)
-                    if data:
-                        dt.append_data(data)
+                    # data = ws.open_property(prop, dt.contains)
+                    # if data:
+                    #     dt.append_data(data)
                     prop['bar'].next()
 
 if __name__ == "__main__":
