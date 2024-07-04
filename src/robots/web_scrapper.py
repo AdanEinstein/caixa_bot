@@ -74,10 +74,12 @@ class WebScrapper(AbstractContextManager):
         self.service.stop()
 
     def __wait_processing(self):
-        div_processando = self.driver.find_element(
-            By.XPATH, '//*[@id="div_processando"]')
-        sleep(3)
-        self.wait.until(lambda _: not div_processando.is_displayed())
+        try:
+            div_processando = self.driver.find_element(
+                By.XPATH, '//*[@id="div_processando"]')
+            sleep(3)
+            self.wait.until(lambda _: not div_processando.is_displayed())
+        except: pass
 
     def access_page(self):
         self.driver.get(Constants.URL_CAIXA_PAGE)

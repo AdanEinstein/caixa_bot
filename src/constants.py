@@ -2,10 +2,9 @@ import os
 from typing import TypedDict
 from configparser import ConfigParser
 
-basedir = os.path.dirname(os.path.abspath(__file__))
-
+basedir = os.path.abspath(os.curdir)
 config = ConfigParser()
-config.read(os.path.join(basedir, os.pardir, '.env.ini'))
+config.read(os.path.join(basedir, '.env.ini'))
 
 class State(TypedDict):
     nome: str

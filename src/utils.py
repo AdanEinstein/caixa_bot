@@ -7,16 +7,16 @@ class ChromeResources(TypedDict):
     driver: str
 
 def get_chrome_resources() -> ChromeResources:
-    cwd = os.path.dirname(os.path.abspath(__file__))
+    cwd = os.path.abspath(os.curdir)
     os_name = platform.system()
     if os_name == 'Linux':
         return {
-            'executable': os.path.join(cwd, os.path.pardir, 'resources', 'linux', 'chrome', 'chrome' ),
-            'driver': os.path.join(cwd, os.path.pardir, 'resources', 'linux', 'chromedriver' )
+            'executable': os.path.join(cwd, 'resources', 'linux', 'chrome', 'chrome' ),
+            'driver': os.path.join(cwd, 'resources', 'linux', 'chromedriver' )
         }
     if os_name == 'Windows':
         return {
-            'executable': os.path.join(cwd, os.path.pardir, 'resources', 'win64', 'chrome', 'chrome.exe' ),
-            'driver': os.path.join(cwd, os.path.pardir, 'resources', 'win64', 'chromedriver.exe' )
+            'executable': os.path.join(cwd, 'resources', 'win64', 'chrome', 'chrome.exe' ),
+            'driver': os.path.join(cwd, 'resources', 'win64', 'chromedriver.exe' )
         }
     raise OSError('SO not supported')
