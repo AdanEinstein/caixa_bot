@@ -1,4 +1,11 @@
+import os
 from typing import TypedDict
+from configparser import ConfigParser
+
+basedir = os.path.dirname(os.path.abspath(__file__))
+
+config = ConfigParser()
+config.read(os.path.join(basedir, os.pardir, '.env.ini'))
 
 class State(TypedDict):
     nome: str
@@ -35,3 +42,8 @@ class Constants:
         {"nome": "Tocantins", "uf": "TO"}
     ]
     URL_CAIXA_PAGE = 'https://venda-imoveis.caixa.gov.br/sistema/busca-licitacoes.asp?sltTipoBusca=licitacoes'
+    OPENAI_API_KEY = config['OPENAI']['OPENAI_API_KEY']
+    OPENAI_API_CONTEXT = config['OPENAI']['OPENAI_API_CONTEXT']
+
+if __name__ == '__main__':
+    print(Constants.OPENAI_API_KEY)

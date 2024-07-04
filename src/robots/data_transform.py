@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Callable, Self
 import pandas as pd
 from contextlib import AbstractContextManager
@@ -24,7 +25,7 @@ class DataTransform(AbstractContextManager):
         self.df.loc[len(self.df)] = data # type: ignore
 
     def contains(self, word: str) -> bool:
-        has_word: Callable[[pd.Series], bool] = lambda r: r.astype(str).str.contains(word).any()
+        has_word: Callable[[pd.Series], bool] = lambda r: r.astype(str).str.contains(re.escape(word)).any()
         result = self.df.apply(has_word, axis=1).any()
         return result
 

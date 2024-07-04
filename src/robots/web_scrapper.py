@@ -211,7 +211,7 @@ class WebScrapper(AbstractContextManager):
             path = path_match.group(1) if path_match else ''
             url = WebScrapper.get_url(path)
             # baixando pdf e lendo dados
-            read_pdf = ReadPdf(url).get_name_and_cpf()
+            read_pdf = ReadPdf(url).get_name_and_cpf_ai()
             data['cpf'] = read_pdf['cpf']
             data['nome'] = read_pdf['nome']
             return data
