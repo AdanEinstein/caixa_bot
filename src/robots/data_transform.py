@@ -19,7 +19,8 @@ class DataTransform(AbstractContextManager):
                                             'edital',
                                             'endereco',
                                             'item',
-                                            'valor'])
+                                            'valor',
+                                            'data'])
 
     def append_data(self, data: Data):
         self.df.loc[len(self.df)] = data # type: ignore
@@ -37,9 +38,4 @@ class DataTransform(AbstractContextManager):
 
 
 if __name__ == '__main__':
-    data = Data(nome='1',cpf='2',edital='3',endereco='4',item='5',valor=5)
-
-    dt = DataTransform()
-    dt.append_data(data)
-
-    print(dt.df)
+    ...

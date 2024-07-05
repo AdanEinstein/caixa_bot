@@ -189,6 +189,7 @@ class WebScrapper(AbstractContextManager):
                 'edital': None,
                 'endereco': None,
                 'valor': None,
+                'data': None,
             }
             self.driver.execute_script(prop['open_cmd'])
             self.__wait_processing()
@@ -197,6 +198,9 @@ class WebScrapper(AbstractContextManager):
                 By.XPATH, '//*[@id="dadosImovel"]//div[@class="related-box"]//span[1]')
             item_elem = self.driver.find_element(
                 By.XPATH, '//*[@id="dadosImovel"]//div[@class="related-box"]//span[2]')
+            dt = self.driver.find_element(
+                By.XPATH, '//*[@id="dadosImovel"]//div[@class="related-box"]'
+            )
             valor: dict = self.driver.execute_script(
                 'return document.evaluate(\'//*[@id="dadosImovel"]//div[@class="content"]/p[1]/text()[1]\', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;')
             endereco: dict = self.driver.execute_script(
@@ -205,16 +209,19 @@ class WebScrapper(AbstractContextManager):
             pattern_num_item = r'Número do item: ?(\d+)'
             pattern_edital = r'(Edital Único.*)'
             pattern_valor = r'Valor de avaliação:\s*R?\$?\s*([\d\.,]+)'
+            pattern_data = r'(\d{2}/\d{2}/\d{4})'
             # compilando padrões com valores
             item_match = re.search(pattern_num_item, item_elem.text)
             edital_match = re.search(pattern_edital, edital_elem.text)
             valor_match = re.search(pattern_valor, valor['data'])
+            dt_match = re.findall(pattern_data, dt.text)
             # atribuindo ao objeto de retorno
             data['item'] = item_match.group(1) if item_match else ''
             data['edital'] = edital_match.group(1) if edital_match else ''
             data['endereco'] = endereco['data']
             data['valor'] = float(valor_match.group(1).replace(
                 '.', '').replace(',', '.')) if valor_match else None
+            data['data'] = dt_match[-1]
             if contains(endereco['data']):
                 return
             # link matricula

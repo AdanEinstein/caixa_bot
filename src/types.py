@@ -8,3 +8,4 @@ class Data(TypedDict):
     edital: str | None
     endereco: str | None
     valor: float | None
+    data: str | None
