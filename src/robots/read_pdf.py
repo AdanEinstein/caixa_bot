@@ -78,5 +78,5 @@ class ReadPdf:
                     cpf = cpf_match.group(2)
                     return NameCpf(nome=nome, cpf=cpf)
             return NameCpf(cpf=None, nome=None)
-        except requests.RequestException:
+        except Exception as e:
             return NameCpf(cpf=None, nome=None)

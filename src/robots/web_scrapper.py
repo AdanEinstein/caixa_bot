@@ -1,4 +1,3 @@
-from ast import pattern
 import re
 from time import sleep
 from typing import Callable, Self, TypedDict, override
@@ -7,6 +6,7 @@ from urllib.parse import urlparse
 from progress.bar import IncrementalBar
 
 from selenium.webdriver import Chrome, ChromeService, ChromeOptions
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
@@ -64,8 +64,8 @@ class WebScrapper(AbstractContextManager):
             service=self.service,
             options=self.options,
         )
-        self.driver.minimize_window()
-        self.wait = WebDriverWait(self.driver, timeout=20)
+        # self.driver.minimize_window()
+        self.wait = WebDriverWait(self.driver, timeout=10)
         return self
 
     @override
@@ -79,13 +79,14 @@ class WebScrapper(AbstractContextManager):
                 By.XPATH, '//*[@id="div_processando"]')
             sleep(3)
             self.wait.until(lambda _: not div_processando.is_displayed())
-        except: pass
+        except:
+            pass
 
     def access_page(self):
         self.driver.get(Constants.URL_CAIXA_PAGE)
         return self
 
-    def select_state(self, state: State):
+    def select_state(self, state: State = Constants.STATES[0]):
         self.state = state
         search_input = self.driver.find_element(
             By.XPATH, '//*[@id="cmb_estado"]')
@@ -100,11 +101,24 @@ class WebScrapper(AbstractContextManager):
     def iterate_notices(self):
         links = self.driver.find_elements(
             By.XPATH, '//div[@id="listalicitacoes"]//p[@class="action"]//a[@title="Listar todos os imóveis deste edital"]')
+        self.wait.until(lambda _: all(
+            [link.is_displayed()
+             for link in links]
+        ))
+        notices_elem = self.driver.find_elements(
+            By.XPATH, '//div[@id="listalicitacoes"]//p[@class="action"]//a[@title="Listar todos os imóveis deste edital"]/../../span/h5'
+        )
+        self.wait.until(lambda _: all(
+            [notice_elem.is_displayed()
+             for notice_elem in notices_elem])
+        )
         commands = list(map(WebScrapper.__get_cmd(), links))
-        for open_notice_cmd in commands:
+        notices = list(map(lambda w: w.text, notices_elem))
+        for open_notice_cmd, name in zip(commands, notices):
             class Notice(TypedDict):
+                name: str
                 open_notice_cmd: str
-            yield Notice(open_notice_cmd=open_notice_cmd)
+            yield Notice(name=name, open_notice_cmd=open_notice_cmd)
 
     def iterate_all_properties(self, cmd: str, state: State | None = None):
         self.driver.execute_script(cmd)
@@ -216,6 +230,8 @@ class WebScrapper(AbstractContextManager):
             read_pdf = ReadPdf(url).get_name_and_cpf_ai()
             data['cpf'] = read_pdf['cpf']
             data['nome'] = read_pdf['nome']
+            return data
+        except NoSuchElementException as e:
             return data
         except Exception as e:
             raise e
