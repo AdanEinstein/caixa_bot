@@ -15,9 +15,11 @@ if platform.system() == "Windows":
     pytesseract.pytesseract.tesseract_cmd = os.path.join(
         os.path.curdir, 'resources', 'win64', 'tesseract', 'tesseract.exe')
 
+
 class NameCpf(TypedDict):
     nome: str | None
     cpf: str | None
+
 
 class ReadPdf:
 
@@ -53,7 +55,6 @@ class ReadPdf:
 
     def get_name_and_cpf_ai(self):
         try:
-            pattern_nome_cpf = r'([A-Z]+(?:\s[A-Z]+)+).*(\d{3}\.\d{3}\.\d{3}\-\d{2})'
             content = self.__to_text()
             with OpenAI(api_key=Constants.OPENAI_API_KEY) as model:
                 stream = model.chat.completions.create(
@@ -70,12 +71,17 @@ class ReadPdf:
                 for chunk in stream:
                     if chunk.choices[0].delta.content is not None:
                         content += chunk.choices[0].delta.content
-                nome_match = re.search(pattern_nome_cpf, f'{content}')
-                cpf_match = re.search(pattern_nome_cpf, f'{content}')
-                if nome_match and cpf_match:
-                    nome = nome_match.group(1).replace('\n', ' ').replace(
-                        'n', '').replace('CPF', '').strip()
-                    cpf = cpf_match.group(2)
+                matches_ = content.split(',')
+                if len(matches_) == 2:
+                    nome = matches_[0]\
+                        .replace('"', '')\
+                        .replace('{', '')\
+                        .replace('}', '')\
+                        .replace('\n', ' ').strip()
+                    cpf = matches_[1]\
+                        .replace('"', '')\
+                        .replace('{', '')\
+                        .replace('}', '').strip()
                     return NameCpf(nome=nome, cpf=cpf)
             return NameCpf(cpf=None, nome=None)
         except Exception as e:
