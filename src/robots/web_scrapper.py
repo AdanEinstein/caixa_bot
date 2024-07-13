@@ -54,6 +54,7 @@ class WebScrapper(AbstractContextManager):
         self.options.add_argument('--no-sandbox')
         self.options.add_argument('--ignore-certificate-errors')
         self.options.add_argument('--disable-logging')
+        self.options.add_argument('--log-level=3')
         self.options.binary_location = self.chrome_resources['executable']
 
     def __enter__(self) -> Self:

@@ -3,8 +3,8 @@ from cx_Freeze import setup, Executable
 # Dependencies are automatically detected, but it might need
 # fine tuning.
 build_options = {
-    'packages': ['fitz', 'pytesseract', 'PIL', 'pandas', 'numpy', 'openpyxl', 'consolemenu', 'requests', 'progress', 'pymupdf'],
-    'excludes': [],
+    'packages': ['fitz', 'pytesseract', 'PIL', 'pandas', 'numpy', 'openpyxl', 'requests', 'progress', 'pymupdf', 'pick'],
+    'excludes': ['jinxed.terminfo.vtwin10'],
     'build_exe': 'build/caixa_bot',
     'include_files': ['resources/', '.env.ini', 'LICENSE'],
     'include_msvcr': True

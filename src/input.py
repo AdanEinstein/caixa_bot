@@ -1,5 +1,5 @@
 import os
-from consolemenu import SelectionMenu
+from pick import pick
 from src.constants import Constants, State
 from tkinter.filedialog import asksaveasfilename
 
@@ -7,34 +7,27 @@ from src.robots.web_scrapper import WebScrapper
 
 
 def get_state() -> State:
-    options = map(
-        lambda state: f'{state['uf']} - {state['nome']}', Constants.STATES)
-    selection_menu = SelectionMenu(
-        options, title='CAIXA BOT', subtitle='Selecione qual estado será mapeado:', clear_screen=True, exit_option_text='Sair')
+    options = list(map(
+        lambda state: f'{state['uf']} - {state['nome']}', Constants.STATES))
+    
+    _, index = pick(
+        title='Selecione qual estado será mapeado',
+        options=options,
+        min_selection_count=1
+    )
 
-    selection_menu.show()
-
-    try:
-        if int(selection_menu.selected_option) == len(Constants.STATES):
-            exit()
-        return Constants.STATES[int(selection_menu.selected_option)]
-    except Exception as e:
-        raise ValueError('estado inválido')
+    return Constants.STATES[index] # type: ignore
 
 
-def get_answer(title='Deseja escolher o destino da planilha:') -> bool:
+def get_confirm(title='Deseja escolher o destino da planilha:') -> bool:
     options = ['SIM', 'NÃO']
-    terminal_menu = SelectionMenu(
-        options, title=title, clear_screen=True, exit_option_text='Sair')
 
-    terminal_menu.show()
+    option, _ = pick(
+        title=title,
+        options=options
+    )
 
-    try:
-        if int(terminal_menu.selected_option) == len(options):
-            exit()
-        return options[int(terminal_menu.selected_option)] == 'SIM'
-    except Exception as e:
-        raise ValueError('opção inválida')
+    return option == 'SIM'
 
 
 def get_output_path(ask: bool = True):
@@ -48,28 +41,28 @@ def get_output_path(ask: bool = True):
     return os.path.join(os.path.abspath(os.path.curdir), 'output', 'data.xlsx')
 
 
-def choice_notice(state: State):
+def notices_choired(state: State):
     options: list[str] = []
     with WebScrapper() as ws:
         ws = ws.access_page()\
             .select_state(state)
         for notice in ws.iterate_notices():
             options.append(notice['name'])
+
+    choices = pick(
+        title='Selecione os editais a serem processados',
+        options=options,
+        min_selection_count=1,
+        multiselect=True,
+    )
+
+    return [choice[0] for choice in choices] # type: ignore
     
-    terminal_menu = SelectionMenu(
-        options, title='De edital deseja prosseguir?', clear_screen=True, exit_option_text='Sair')
-
-    terminal_menu.show()
-
-    try:
-        if int(terminal_menu.selected_option) == len(options):
-            exit()
-        return options[int(terminal_menu.selected_option)]
-    except Exception as e:
-        raise ValueError('opção inválida')
-
 
 if __name__ == "__main__":
-    # get_state()
-    path = get_output_path()
-    print(path)
+    state = get_state()
+    path_export = get_confirm()
+    path = notices_choired(state)
+    print(f'{state=}')
+    print(f'{path_export=}')
+    print(f'{path=}')
